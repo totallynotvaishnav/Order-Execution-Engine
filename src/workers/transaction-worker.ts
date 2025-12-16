@@ -7,11 +7,23 @@ import { Transaction, WorkerTask } from "../core/models";
 
 // Cache configuration supporting Render, Railway and local environments
 const CACHE_SETTINGS = (() => {
+  // Debug logging
+  console.log('[DEBUG] REDIS_URL:', process.env.REDIS_URL);
+  console.log('[DEBUG] CACHE_AUTH_TOKEN:', process.env.CACHE_AUTH_TOKEN);
+  console.log('[DEBUG] CACHE_SERVER_HOST:', process.env.CACHE_SERVER_HOST);
+  console.log('[DEBUG] CACHE_SERVER_PORT:', process.env.CACHE_SERVER_PORT);
+  console.log('[DEBUG] config.cache.host:', config.cache.host);
+  console.log('[DEBUG] config.cache.port:', config.cache.port);
+  
   // Render provides REDIS_URL in connection string format
   const redisUrl = process.env.REDIS_URL || process.env.CACHE_AUTH_TOKEN;
   
+  console.log('[DEBUG] Using redisUrl:', redisUrl);
+  console.log('[DEBUG] Starts with redis://?', redisUrl?.startsWith('redis://'));
+  
   if (redisUrl && redisUrl.startsWith('redis://')) {
     // Use connection string (Render format)
+    console.log('[DEBUG] Using connection string format');
     return {
       url: redisUrl,
       maxRetriesPerRequest: null,
@@ -19,6 +31,7 @@ const CACHE_SETTINGS = (() => {
     };
   } else {
     // Use individual host/port/password (Railway/local format)
+    console.log('[DEBUG] Using host/port format');
     return {
       host: config.cache.host,
       port: config.cache.port,
