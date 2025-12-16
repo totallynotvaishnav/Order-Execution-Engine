@@ -49,11 +49,11 @@ export class TransactionWorker {
   private backgroundWorker: Worker<WorkerTask> | null = null;
 
   constructor() {
-    console.log("[Queue] Establishing connection to cache server:", {
-      host: CACHE_SETTINGS.host,
-      port: CACHE_SETTINGS.port,
-      hasPassword: !!CACHE_SETTINGS.password,
-    });
+    console.log("[Queue] Establishing connection to cache server:", 
+      (CACHE_SETTINGS as any).url 
+        ? { url: (CACHE_SETTINGS as any).url }
+        : { host: (CACHE_SETTINGS as any).host, port: (CACHE_SETTINGS as any).port, hasPassword: !!(CACHE_SETTINGS as any).password }
+    );
 
     this.jobQueue = new Queue("transactions", { connection: CACHE_SETTINGS });
     console.log("[Queue] Transaction worker initialized");
