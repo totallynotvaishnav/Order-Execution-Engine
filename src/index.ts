@@ -9,6 +9,9 @@ import { config } from "./config/environment";
 const SERVER_PORT = parseInt(process.env.PORT || '') || config.server.port;
 const SERVER_HOST = config.server.host;
 
+console.log(process.env.CACHE_SERVER_HOST)
+console.log("testinggg")
+
 async function startServer() {
   try {
     // Initialize database connection (optional - will fallback to memory if not available)
