@@ -1,0 +1,63 @@
+services:
+  # Main Application
+  - type: web
+    name: dex-transaction-processor
+    env: node
+    region: oregon
+    plan: free  # Free tier - spins down after 15min inactivity
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /status
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SERVER_PORT
+        value: 10000
+      - key: SERVER_HOST
+        value: 0.0.0.0
+      - key: DATABASE_URL
+        fromDatabase:
+          name: transactions-db
+          property: connectionString
+      - key: CACHE_SERVER_HOST
+        fromService:
+          name: redis
+          type: redis
+          property: host
+      - key: CACHE_SERVER_PORT
+        fromService:
+          name: redis
+          type: redis
+          property: port
+      - key: CACHE_AUTH_TOKEN
+        fromService:
+          name: redis
+          type: redis
+          property: connectionString
+      - key: WORKER_CONCURRENCY_LIMIT
+        value: 10
+      - key: RETRY_ATTEMPT_LIMIT
+        value: 3
+      - key: RETRY_BACKOFF_DURATION
+        value: 5000
+      - key: USE_LIVE_TRADING
+        value: false
+      - key: SIMULATION_LATENCY
+        value: 2000
+
+  # Redis Cache (Free tier)
+  - type: redis
+    name: redis
+    region: oregon
+    plan: free  # Free tier - 25MB storage
+    maxmemoryPolicy: allkeys-lru
+    ipAllowList: []
+
+databases:
+  # PostgreSQL Database (Free tier)
+  - name: transactions-db
+    region: oregon
+    plan: free  # Free tier - 1GB storage, 90 day expiration
+    databaseName: transactions
+    user: transactions_user
+    postgresMajorVersion: 15

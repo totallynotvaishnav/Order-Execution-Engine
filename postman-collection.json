@@ -1,0 +1,241 @@
+{
+  "info": {
+    "name": "DEX Transaction Processor",
+    "description": "Complete test suite for transaction processing API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Status Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/status",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "status"
+          ]
+        },
+        "description": "Check if server is running"
+      }
+    },
+    {
+      "name": "2. Get System Metrics",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/metrics",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "metrics"
+          ]
+        },
+        "description": "Get current queue and system statistics"
+      }
+    },
+    {
+      "name": "3. Create Single Transaction (WebSocket)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tokenIn\": \"SOL\",\n  \"tokenOut\": \"USDC\",\n  \"amount\": 100,\n  \"slippage\": 0.5\n}"
+        },
+        "url": {
+          "raw": "{{base_url_ws}}/api/transactions/process",
+          "host": [
+            "{{base_url_ws}}"
+          ],
+          "path": [
+            "api",
+            "transactions",
+            "process"
+          ]
+        },
+        "description": "Submit market transaction and watch status updates via WebSocket"
+      }
+    },
+    {
+      "name": "4. Create Transaction (Batch 1)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tokenIn\": \"SOL\",\n  \"tokenOut\": \"USDC\",\n  \"amount\": 50,\n  \"slippage\": 1.0\n}"
+        },
+        "url": {
+          "raw": "{{base_url_ws}}/api/transactions/process",
+          "host": [
+            "{{base_url_ws}}"
+          ],
+          "path": [
+            "api",
+            "transactions",
+            "process"
+          ]
+        },
+        "description": "Submit first concurrent transaction"
+      }
+    },
+    {
+      "name": "5. Create Transaction (Batch 2)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tokenIn\": \"SOL\",\n  \"tokenOut\": \"USDC\",\n  \"amount\": 75,\n  \"slippage\": 0.8\n}"
+        },
+        "url": {
+          "raw": "{{base_url_ws}}/api/transactions/process",
+          "host": [
+            "{{base_url_ws}}"
+          ],
+          "path": [
+            "api",
+            "transactions",
+            "process"
+          ]
+        },
+        "description": "Submit second concurrent transaction"
+      }
+    },
+    {
+      "name": "6. Create Transaction (Batch 3)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tokenIn\": \"SOL\",\n  \"tokenOut\": \"USDC\",\n  \"amount\": 150,\n  \"slippage\": 1.2\n}"
+        },
+        "url": {
+          "raw": "{{base_url_ws}}/api/transactions/process",
+          "host": [
+            "{{base_url_ws}}"
+          ],
+          "path": [
+            "api",
+            "transactions",
+            "process"
+          ]
+        },
+        "description": "Submit third concurrent transaction"
+      }
+    },
+    {
+      "name": "7. Create Transaction (Batch 4)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tokenIn\": \"SOL\",\n  \"tokenOut\": \"USDC\",\n  \"amount\": 120,\n  \"slippage\": 0.6\n}"
+        },
+        "url": {
+          "raw": "{{base_url_ws}}/api/transactions/process",
+          "host": [
+            "{{base_url_ws}}"
+          ],
+          "path": [
+            "api",
+            "transactions",
+            "process"
+          ]
+        },
+        "description": "Submit fourth concurrent transaction"
+      }
+    },
+    {
+      "name": "8. Create Transaction (Batch 5)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tokenIn\": \"SOL\",\n  \"tokenOut\": \"USDC\",\n  \"amount\": 200,\n  \"slippage\": 0.9\n}"
+        },
+        "url": {
+          "raw": "{{base_url_ws}}/api/transactions/process",
+          "host": [
+            "{{base_url_ws}}"
+          ],
+          "path": [
+            "api",
+            "transactions",
+            "process"
+          ]
+        },
+        "description": "Submit fifth concurrent transaction"
+      }
+    },
+    {
+      "name": "9. Get Transaction Status (Replace {{transactionId}})",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/transactions/{{transactionId}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "transactions",
+            "{{transactionId}}"
+          ]
+        },
+        "description": "Get detailed status of specific transaction. Replace {{transactionId}} with actual transaction ID from response"
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "base_url_ws",
+      "value": "ws://localhost:3000",
+      "type": "string"
+    }
+  ]
+}
