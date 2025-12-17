@@ -22,24 +22,35 @@ const CACHE_SETTINGS = (() => {
   console.log('[DEBUG] Starts with redis://?', redisUrl?.startsWith('redis://'));
   
   if (redisUrl && redisUrl.startsWith('redis://')) {
-    // Use connection string (Render format)
+    // Parse redis://host:port format into proper connection object
     console.log('[DEBUG] Using connection string format');
-    return {
-      url: redisUrl,
-      maxRetriesPerRequest: null,
-      enableReadyCheck: false,
-    };
-  } else {
-    // Use individual host/port/password (Railway/local format)
-    console.log('[DEBUG] Using host/port format');
-    return {
-      host: config.cache.host,
-      port: config.cache.port,
-      password: config.cache.authToken,
-      maxRetriesPerRequest: null,
-      enableReadyCheck: false,
-    };
+    
+    try {
+      const url = new URL(redisUrl);
+      const settings = {
+        host: url.hostname,
+        port: parseInt(url.port || '6379'),
+        password: url.password || undefined,
+        maxRetriesPerRequest: null,
+        enableReadyCheck: false,
+      };
+      console.log('[DEBUG] Parsed connection settings:', settings);
+      return settings;
+    } catch (err) {
+      console.error('[ERROR] Failed to parse Redis URL:', err);
+      // Fallback to host/port format
+    }
   }
+  
+  // Use individual host/port/password (Railway/local format)
+  console.log('[DEBUG] Using host/port format');
+  return {
+    host: config.cache.host,
+    port: config.cache.port,
+    password: config.cache.authToken,
+    maxRetriesPerRequest: null,
+    enableReadyCheck: false,
+  };
 })();
 
 const RETRY_LIMIT = config.worker.retryAttemptLimit;
@@ -49,11 +60,7 @@ export class TransactionWorker {
   private backgroundWorker: Worker<WorkerTask> | null = null;
 
   constructor() {
-    console.log("[Queue] Establishing connection to cache server:", 
-      (CACHE_SETTINGS as any).url 
-        ? { url: (CACHE_SETTINGS as any).url }
-        : { host: (CACHE_SETTINGS as any).host, port: (CACHE_SETTINGS as any).port, hasPassword: !!(CACHE_SETTINGS as any).password }
-    );
+    console.log("[Queue] Establishing connection to cache server:", CACHE_SETTINGS);
 
     this.jobQueue = new Queue("transactions", { connection: CACHE_SETTINGS });
     console.log("[Queue] Transaction worker initialized");
@@ -62,11 +69,7 @@ export class TransactionWorker {
   async initialize(): Promise<void> {
     console.log("[Queue] Starting background worker...");
     
-    console.log("[DEBUG] Worker using CACHE_SETTINGS:", 
-      (CACHE_SETTINGS as any).url 
-        ? { url: (CACHE_SETTINGS as any).url }
-        : { host: (CACHE_SETTINGS as any).host, port: (CACHE_SETTINGS as any).port }
-    );
+    console.log("[DEBUG] Worker using CACHE_SETTINGS:", CACHE_SETTINGS);
     
     this.backgroundWorker = new Worker(
       "transactions",
