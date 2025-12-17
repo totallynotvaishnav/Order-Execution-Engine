@@ -62,11 +62,17 @@ export class TransactionWorker {
   async initialize(): Promise<void> {
     console.log("[Queue] Starting background worker...");
     
+    console.log("[DEBUG] Worker using CACHE_SETTINGS:", 
+      (CACHE_SETTINGS as any).url 
+        ? { url: (CACHE_SETTINGS as any).url }
+        : { host: (CACHE_SETTINGS as any).host, port: (CACHE_SETTINGS as any).port }
+    );
+    
     this.backgroundWorker = new Worker(
       "transactions",
       async (job: Job<WorkerTask>) => await this.executeTask(job),
       {
-        connection: CACHE_SETTINGS,
+        connection: CACHE_SETTINGS,  // ← THIS IS THE FIX!
         concurrency: config.worker.concurrencyLimit,
       }
     );
