@@ -12,7 +12,7 @@ services:
   postgres:
     image: postgres:17-alpine
     environment:
-      POSTGRES_DB: orders_db
+      POSTGRES_DB: transactions_db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:

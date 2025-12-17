@@ -2,14 +2,19 @@
 
 A production-ready DEX transaction processing engine with intelligent routing between Raydium and Meteora, PostgreSQL persistence, real-time WebSocket status updates, and concurrent transaction processing.
 
+🔗 **Live Demo**: [https://dex-transaction-processor.onrender.com](https://dex-transaction-processor.onrender.com/status)
+
+---
+
 ## 🎯 Transaction Type: Market Transactions
 
 **Why Market Transactions?**
 Market transactions execute immediately at the best available price, making them perfect for demonstrating real-time DEX routing and status streaming. They showcase the core architecture without complex price monitoring logic.
 
 **Extension Strategy:**
-- **Limit Orders**: Add a price monitoring service that checks current prices against target; execute when threshold is met
-- **Sniper Orders**: Implement token launch detection via pool creation events; trigger market execution on detection
+
+-   **Limit Orders**: Add a price monitoring service that checks current prices against target; execute when threshold is met
+-   **Sniper Orders**: Implement token launch detection via pool creation events; trigger market execution on detection
 
 ---
 
@@ -45,11 +50,11 @@ pending → routing → building → submitted → confirmed
 
 ### Key Components
 
-- **PostgreSQL Database**: Persistent storage for all transactions
-- **Redis Queue (BullMQ)**: Background job processing with retry logic
-- **WebSocket Server**: Real-time status updates to clients
-- **Exchange Optimizer**: Intelligent DEX routing logic
-- **Transaction Registry**: CRUD operations with database fallback
+-   **PostgreSQL Database**: Persistent storage for all transactions
+-   **Redis Queue (BullMQ)**: Background job processing with retry logic
+-   **WebSocket Server**: Real-time status updates to clients
+-   **Exchange Optimizer**: Intelligent DEX routing logic
+-   **Transaction Registry**: CRUD operations with database fallback
 
 ---
 
@@ -57,15 +62,15 @@ pending → routing → building → submitted → confirmed
 
 ### Prerequisites
 
-- Node.js 18+
-- Docker (for Redis and PostgreSQL)
+-   Node.js 18+
+-   Docker (for Redis and PostgreSQL)
 
 ### Installation
 
 ```bash
 # Clone and install
-git clone https://github.com/yourusername/dex-transaction-processor.git
-cd dex-transaction-processor
+git clone https://github.com/totallynotvaishnav/Order-Execution-Engine.git
+cd Order-Execution-Engine
 npm install
 
 # Setup environment
@@ -120,14 +125,19 @@ npm run dev
 ### 1. Health Check
 
 ```bash
+# Live demo
+curl https://dex-transaction-processor.onrender.com/status
+
+# Or locally
 curl http://localhost:3000/status
 ```
 
 **Response:**
+
 ```json
 {
-  "status": "ok",
-  "timestamp": "2024-12-17T00:30:00.000Z"
+    "status": "ok",
+    "timestamp": "2024-12-17T00:30:00.000Z"
 }
 ```
 
@@ -136,22 +146,27 @@ curl http://localhost:3000/status
 ### 2. System Metrics
 
 ```bash
+# Live demo
+curl https://dex-transaction-processor.onrender.com/metrics
+
+# Or locally
 curl http://localhost:3000/metrics
 ```
 
 **Response:**
+
 ```json
 {
-  "queue": {
-    "waiting": 0,
-    "active": 2,
-    "completed": 15,
-    "failed": 0,
-    "delayed": 0
-  },
-  "websockets": 3,
-  "activeTransactions": 2,
-  "totalTransactions": 17
+    "queue": {
+        "waiting": 0,
+        "active": 2,
+        "completed": 15,
+        "failed": 0,
+        "delayed": 0
+    },
+    "websockets": 3,
+    "activeTransactions": 2,
+    "totalTransactions": 17
 }
 ```
 
@@ -160,21 +175,29 @@ curl http://localhost:3000/metrics
 ### 3. Process Transaction (WebSocket)
 
 **Install wscat:**
+
 ```bash
 npm install -g wscat
 ```
 
 **Connect and submit transaction:**
+
 ```bash
+# Live demo
+wscat -c wss://dex-transaction-processor.onrender.com/api/transactions/process
+
+# Or locally
 wscat -c ws://localhost:3000/api/transactions/process
 ```
 
 **After "Connected", send:**
+
 ```json
-{"tokenIn":"SOL","tokenOut":"USDC","amount":100}
+{ "tokenIn": "SOL", "tokenOut": "USDC", "amount": 100 }
 ```
 
 **Real-time responses:**
+
 ```json
 // 1. Connection established
 {"type":"session_established","message":"Connected to Transaction Processor. Send your transaction as JSON."}
@@ -200,26 +223,30 @@ wscat -c ws://localhost:3000/api/transactions/process
 ### 4. Get Transaction Details
 
 ```bash
-# Replace TRANSACTION_ID with actual ID from WebSocket response
+# Live demo
+curl https://dex-transaction-processor.onrender.com/transactions/abc-123-def-456
+
+# Or locally
 curl http://localhost:3000/transactions/abc-123-def-456
 ```
 
 **Response:**
+
 ```json
 {
-  "id": "abc-123-def-456",
-  "userId": "user_123",
-  "type": "market",
-  "tokenIn": "SOL",
-  "tokenOut": "USDC",
-  "amount": 100,
-  "status": "confirmed",
-  "selectedDex": "raydium",
-  "executedPrice": 1.0045,
-  "txHash": "mock_raydium_1701342603_xyz789",
-  "createdAt": "2024-12-17T00:30:00.000Z",
-  "updatedAt": "2024-12-17T00:30:05.000Z",
-  "retryCount": 0
+    "id": "abc-123-def-456",
+    "userId": "user_123",
+    "type": "market",
+    "tokenIn": "SOL",
+    "tokenOut": "USDC",
+    "amount": 100,
+    "status": "confirmed",
+    "selectedDex": "raydium",
+    "executedPrice": 1.0045,
+    "txHash": "mock_raydium_1701342603_xyz789",
+    "createdAt": "2024-12-17T00:30:00.000Z",
+    "updatedAt": "2024-12-17T00:30:05.000Z",
+    "retryCount": 0
 }
 ```
 
@@ -232,33 +259,34 @@ curl http://localhost:3000/transactions/abc-123-def-456
 Open 5 terminals and run simultaneously:
 
 ```bash
-# Terminal 1
-wscat -c ws://localhost:3000/api/transactions/process
+# Live demo - Terminal 1
+wscat -c wss://dex-transaction-processor.onrender.com/api/transactions/process
 {"tokenIn":"SOL","tokenOut":"USDC","amount":100}
 
 # Terminal 2
-wscat -c ws://localhost:3000/api/transactions/process
+wscat -c wss://dex-transaction-processor.onrender.com/api/transactions/process
 {"tokenIn":"SOL","tokenOut":"USDC","amount":150}
 
 # Terminal 3
-wscat -c ws://localhost:3000/api/transactions/process
+wscat -c wss://dex-transaction-processor.onrender.com/api/transactions/process
 {"tokenIn":"USDC","tokenOut":"SOL","amount":200}
 
 # Terminal 4
-wscat -c ws://localhost:3000/api/transactions/process
+wscat -c wss://dex-transaction-processor.onrender.com/api/transactions/process
 {"tokenIn":"SOL","tokenOut":"USDC","amount":75}
 
 # Terminal 5
-wscat -c ws://localhost:3000/api/transactions/process
+wscat -c wss://dex-transaction-processor.onrender.com/api/transactions/process
 {"tokenIn":"SOL","tokenOut":"USDC","amount":125}
 ```
 
 Watch your server logs to see:
-- ✅ Database persistence for all transactions
-- ✅ Queue processing 10 transactions concurrently
-- ✅ DEX routing decisions logged
-- ✅ Price comparisons (Raydium vs Meteora)
-- ✅ All transactions completing successfully
+
+-   ✅ Database persistence for all transactions
+-   ✅ Queue processing 10 transactions concurrently
+-   ✅ DEX routing decisions logged
+-   ✅ Price comparisons (Raydium vs Meteora)
+-   ✅ All transactions completing successfully
 
 ---
 
@@ -289,9 +317,10 @@ npm test exchange-optimizer.test.ts
 ```
 
 **Test Coverage:**
-- ✅ Exchange Optimizer (6 tests)
-- ✅ Transaction Registry (6 tests)
-- ✅ Integration Tests (3 tests)
+
+-   ✅ Exchange Optimizer (6 tests)
+-   ✅ Transaction Registry (6 tests)
+-   ✅ Integration Tests (3 tests)
 
 ---
 
@@ -300,8 +329,9 @@ npm test exchange-optimizer.test.ts
 ### Deploy to Render (Recommended)
 
 **Prerequisites:**
-- GitHub account
-- Render account (free tier available)
+
+-   GitHub account
+-   Render account (free tier available)
 
 **One-Click Deploy:**
 
@@ -311,37 +341,38 @@ npm test exchange-optimizer.test.ts
 4. Connect your GitHub repository
 5. Select `render.yaml`
 6. Review services:
-   - Web Service (Node.js app)
-   - PostgreSQL Database
-   - Redis Instance
+    - Web Service (Node.js app)
+    - PostgreSQL Database
+    - Redis Instance
 7. Click "Apply"
 8. Wait ~5 minutes for deployment
 
 **Your app will be live at:** `https://your-app-name.onrender.com`
 
 **Detailed guides:**
-- See `docs/RENDER_DEPLOYMENT.md` for complete deployment guide
-- See `docs/FREE_TIER_GUIDE.md` for free tier limitations and tips
-- See `docs/RENDER_CHECKLIST.md` for step-by-step verification
+
+-   See `docs/RENDER_DEPLOYMENT.md` for complete deployment guide
+-   See `docs/FREE_TIER_GUIDE.md` for free tier limitations and tips
+-   See `docs/RENDER_CHECKLIST.md` for step-by-step verification
 
 ### Environment Variables (Auto-configured by render.yaml)
 
-- `DATABASE_URL` - PostgreSQL connection string
-- `REDIS_URL` - Redis connection string
-- `NODE_ENV=production`
-- `SERVER_HOST=0.0.0.0`
-- `PUBLIC_URL` - Your Render URL
+-   `DATABASE_URL` - PostgreSQL connection string
+-   `REDIS_URL` - Redis connection string
+-   `NODE_ENV=production`
+-   `SERVER_HOST=0.0.0.0`
+-   `PUBLIC_URL` - Your Render URL
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Runtime**: Node.js 18 + TypeScript
-- **API**: Fastify + @fastify/websocket
-- **Database**: PostgreSQL (with in-memory fallback)
-- **Queue**: BullMQ + Redis
-- **Testing**: Jest + ts-jest
-- **Deployment**: Render (with Docker Compose support)
+-   **Runtime**: Node.js 18 + TypeScript
+-   **API**: Fastify + @fastify/websocket
+-   **Database**: PostgreSQL (with in-memory fallback)
+-   **Queue**: BullMQ + Redis
+-   **Testing**: Jest + ts-jest
+-   **Deployment**: Render (with Docker Compose support)
 
 ---
 
@@ -369,11 +400,6 @@ dex-transaction-processor/
 │   ├── bootstrap.ts                     # Fastify app setup
 │   └── index.ts                         # Entry point
 ├── tests/                               # Test files
-├── docs/                                # Documentation
-│   ├── DATABASE_SETUP.md
-│   ├── RENDER_DEPLOYMENT.md
-│   ├── RENDER_CHECKLIST.md
-│   └── FREE_TIER_GUIDE.md
 ├── scripts/
 │   ├── init-db.sh                       # DB initialization
 │   └── render-build.sh                  # Render build script
@@ -389,37 +415,37 @@ dex-transaction-processor/
 
 ### Why PostgreSQL with Fallback?
 
-- **Production Ready**: Data persists across restarts
-- **Flexible Development**: Works without database locally (in-memory Map)
-- **Automatic Fallback**: If database unavailable, uses memory
-- **Indexed Queries**: Fast lookups on status, created_at, user_id
+-   **Production Ready**: Data persists across restarts
+-   **Flexible Development**: Works without database locally (in-memory Map)
+-   **Automatic Fallback**: If database unavailable, uses memory
+-   **Indexed Queries**: Fast lookups on status, created_at, user_id
 
 ### Why Simulated Execution?
 
-- **Focus on Architecture**: Prioritized clean code structure and real-time patterns
-- **Reliable Testing**: No network dependencies or devnet failures
-- **Instant Deployment**: Works on free hosting without RPC requirements
-- **Realistic Simulation**: 2-3 second delays, 2-5% price variations between DEXs
+-   **Focus on Architecture**: Prioritized clean code structure and real-time patterns
+-   **Reliable Testing**: No network dependencies or devnet failures
+-   **Instant Deployment**: Works on free hosting without RPC requirements
+-   **Realistic Simulation**: 2-3 second delays, 2-5% price variations between DEXs
 
 ### Exchange Optimization Strategy
 
-- **Parallel Queries**: Fetch both DEXs simultaneously (200ms each)
-- **Fee-Adjusted Comparison**: Compare final amounts after fees
-- **Transparent Logging**: All routing decisions logged with price details
+-   **Parallel Queries**: Fetch both DEXs simultaneously (200ms each)
+-   **Fee-Adjusted Comparison**: Compare final amounts after fees
+-   **Transparent Logging**: All routing decisions logged with price details
 
 ### Queue Design
 
-- **BullMQ**: Industry-standard with built-in retries
-- **Exponential Backoff**: 5s → 10s → 20s between attempts
-- **Graceful Failure**: After 3 attempts, mark failed with error message
-- **Persistent Jobs**: Redis-backed queue survives restarts
+-   **BullMQ**: Industry-standard with built-in retries
+-   **Exponential Backoff**: 5s → 10s → 20s between attempts
+-   **Graceful Failure**: After 3 attempts, mark failed with error message
+-   **Persistent Jobs**: Redis-backed queue survives restarts
 
 ### WebSocket Pattern
 
-- **Single Endpoint**: HTTP → WS upgrade on same route
-- **Connection Pooling**: Multiple clients can subscribe to same transaction
-- **Auto Cleanup**: Connections removed on disconnect
-- **Real-time Updates**: Status changes broadcast immediately
+-   **Single Endpoint**: HTTP → WS upgrade on same route
+-   **Connection Pooling**: Multiple clients can subscribe to same transaction
+-   **Auto Cleanup**: Connections removed on disconnect
+-   **Real-time Updates**: Status changes broadcast immediately
 
 ---
 
@@ -467,34 +493,19 @@ npm run build
 npm test
 ```
 
-### Render Deployment Issues
-
-See `docs/RENDER_CHECKLIST.md` for complete troubleshooting guide.
-
----
-
 ## 📦 Postman Collection
 
 Import `postman-collection.json` for ready-to-use requests:
-- Health check
-- System metrics
-- Transaction retrieval
-- WebSocket connection instructions
+
+-   Health check
+-   System metrics
+-   Transaction retrieval
+-   WebSocket connection instructions
 
 **Note:** WebSocket endpoints cannot be tested via Postman POST requests. Use:
-- `wscat` (recommended)
-- Postman's native WebSocket Request feature
 
----
-
-## 📚 Additional Documentation
-
-- **[Database Setup Guide](docs/DATABASE_SETUP.md)** - PostgreSQL configuration and migration
-- **[Render Deployment Guide](docs/RENDER_DEPLOYMENT.md)** - Complete deployment walkthrough
-- **[Render Checklist](docs/RENDER_CHECKLIST.md)** - Step-by-step verification
-- **[Free Tier Guide](docs/FREE_TIER_GUIDE.md)** - Optimizing for free tier, limitations
-
----
+-   `wscat` (recommended)
+-   Postman's native WebSocket Request feature
 
 ## 🎯 Key Features
 
@@ -507,42 +518,19 @@ Import `postman-collection.json` for ready-to-use requests:
 ✅ **Automatic Retries** - Exponential backoff on failures  
 ✅ **Production Ready** - Docker support, health checks, graceful shutdown  
 ✅ **Free Tier Deployable** - Works on Render free tier  
-✅ **Comprehensive Testing** - Unit and integration tests  
-
----
-
-## 🔒 Production Checklist
-
-Before deploying to production:
-
-- [ ] Set `NODE_ENV=production`
-- [ ] Configure `DATABASE_URL` for PostgreSQL
-- [ ] Set `REDIS_URL` or `CACHE_SERVER_HOST/PORT`
-- [ ] Update `PUBLIC_URL` for your domain
-- [ ] Run database migrations (`npm run db:init`)
-- [ ] Configure CORS for your domain (optional)
-- [ ] Set up monitoring/alerting (optional)
-- [ ] Review security settings (optional)
-- [ ] Test all endpoints in production environment
-- [ ] Set up automatic backups (paid tier only)
-
----
+✅ **Comprehensive Testing** - Unit and integration tests
 
 ## 🚀 Performance
 
-- **Concurrent Transactions**: 10 simultaneous (configurable)
-- **Average Processing Time**: 2-3 seconds per transaction
-- **Database Query Time**: <10ms with indexes
-- **WebSocket Latency**: <50ms for status updates
-- **Cold Start (Free Tier)**: 30-60 seconds
-- **Cold Start (Paid Tier)**: Instant (always on)
+-   **Concurrent Transactions**: 10 simultaneous (configurable)
+-   **Average Processing Time**: 2-3 seconds per transaction
+-   **Database Query Time**: <10ms with indexes
+-   **WebSocket Latency**: <50ms for status updates
+-   **Cold Start (Free Tier)**: 30-60 seconds
+-   **Cold Start (Paid Tier)**: Instant (always on)
 
 ---
 
 ## 📝 License
 
 MIT License - See LICENSE file for details
-
----
-
-**Built with production-ready architecture and best practices** 🚀

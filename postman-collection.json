@@ -229,12 +229,12 @@
   "variable": [
     {
       "key": "base_url",
-      "value": "http://localhost:3000",
+      "value": "https://dex-transaction-processor.onrender.com",
       "type": "string"
     },
     {
       "key": "base_url_ws",
-      "value": "ws://localhost:3000",
+      "value": "wss://dex-transaction-processor.onrender.com",
       "type": "string"
     }
   ]
